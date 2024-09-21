@@ -37,15 +37,41 @@ const initialComments: TComment[] = [
 ];
 
 const CommentItem = ({ comment }: TCommentItem) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState("");
+
   return (
     <div className="p-2 rounded-sm border border-neutral-700 bg-neutral-800 flex flex-col gap-2">
-      <p className="text-neutral-300">{comment.text}</p>
+      {isEditing ? (
+        <>
+          <input
+            className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
+            value={editText || comment.text}
+            onChange={(e) => setEditText(e.target.value)}
+          />
 
-      <div className="flex items-center gap-2">
-        <Button size="sm">Edit</Button>
-        <Button size="sm">Delete</Button>
-        <Button size="sm">Reply</Button>
-      </div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" className="bg-neutral-700">
+              Save
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="text-neutral-300">{comment.text}</p>
+
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={() => setIsEditing(true)}>
+              Edit
+            </Button>
+            <Button size="sm">Delete</Button>
+            <Button size="sm">Reply</Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
