@@ -35,9 +35,10 @@ const initialComments: TComment[] = [
 type TCommentItem = {
   comment: TComment;
   onEdit: (id: number, newText: string) => void;
+  onDelete: (id: number) => void;
 };
 
-const CommentItem = ({ comment, onEdit }: TCommentItem) => {
+const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
 
@@ -45,6 +46,11 @@ const CommentItem = ({ comment, onEdit }: TCommentItem) => {
   const handleSaveEdit = () => {
     onEdit(comment.id, editText);
     setIsEditing(false);
+  };
+
+  // === handling delete ===
+  const handleDelete = () => {
+    onDelete(comment.id);
   };
 
   return (
@@ -78,7 +84,9 @@ const CommentItem = ({ comment, onEdit }: TCommentItem) => {
             <Button size="sm" onClick={() => setIsEditing(true)}>
               Edit
             </Button>
-            <Button size="sm">Delete</Button>
+            <Button size="sm" onClick={handleDelete}>
+              Delete
+            </Button>
             <Button size="sm">Reply</Button>
           </div>
         </>
@@ -121,6 +129,21 @@ const App = () => {
     setComments(editComment(comments));
   };
 
+  // === handle delete comment ===
+  const handleDeleteComment = (id: number) => {
+    const deleteComment = (comments: TComment[]) => {
+      return comments.filter((comment) => {
+        if (comment.id === id) {
+          return false;
+        }
+        comment.replies = deleteComment(comment.replies);
+        return true;
+      });
+    };
+
+    setComments(deleteComment(comments));
+  };
+
   return (
     <main className="min-h-screen w-full bg-neutral-900 text-white flex flex-col gap-12">
       <section className="w-full max-w-screen-sm mx-auto px-4 py-12">
@@ -149,7 +172,7 @@ const App = () => {
               key={i}
               comment={comment}
               onEdit={handleEditComment}
-              // onDelete={handleDelete}
+              onDelete={handleDeleteComment}
               // onReply={handleReply}
               // depth={0}
             />
