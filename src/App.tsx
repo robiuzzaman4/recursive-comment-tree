@@ -109,7 +109,12 @@ const App = () => {
             value={newCommentText}
             onChange={(e) => setNewCommentText(e.target.value)}
           />
-          <Button onClick={handleAddNewComment}>Comment</Button>
+          <Button
+            onClick={handleAddNewComment}
+            className="bg-cyan-400 hover:bg-cyan-300 border-cyan-400 hover:border-cyan-300 text-neutral-800"
+          >
+            Comment
+          </Button>
         </div>
 
         <div className="space-y-2">
