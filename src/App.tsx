@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "./components/button";
 
 type TComment = {
-  id: number;
+  id: string | Date;
   text: string;
   replies: TComment[];
 };
@@ -13,15 +13,15 @@ type TCommentItem = {
 
 const initialComments: TComment[] = [
   {
-    id: 1,
+    id: "1",
     text: "This is the first comment",
     replies: [
       {
-        id: 2,
+        id: "2",
         text: "This is a reply to the first comment",
         replies: [
           {
-            id: 3,
+            id: "3",
             text: "This is a nested reply",
             replies: [],
           },
@@ -30,7 +30,7 @@ const initialComments: TComment[] = [
     ],
   },
   {
-    id: 4,
+    id: "4",
     text: "This is another top-level comment",
     replies: [],
   },
@@ -52,23 +52,44 @@ const CommentItem = ({ comment }: TCommentItem) => {
 
 const App = () => {
   const [comments, setComments] = useState<TComment[]>(initialComments);
+  const [newCommentText, setNewCommentText] = useState("");
+
+  // === handle add new comment ===
+  const handleAddNewComment = () => {
+    if (newCommentText.trim()) {
+      setComments([
+        ...comments,
+        {
+          id: new Date(),
+          text: newCommentText,
+          replies: [],
+        },
+      ]);
+      setNewCommentText("");
+    }
+  };
+
   return (
     <main className="min-h-screen w-full bg-neutral-900 text-white flex flex-col gap-12">
       <section className="w-full max-w-screen-sm mx-auto px-4 py-12">
         {/* title */}
-        <h3 className="text-2xl font-normal tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-neutral-300 via-sky-500 to-neutral-300">
+        <h3 className="text-3xl font-medium tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-sky-400 to-indigo-200">
           Recursive Comment Tree:
         </h3>
 
         <div className="w-full flex items-center gap-6 pb-6">
-          <input className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400" />
-          <Button>Comment</Button>
+          <input
+            className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
+            value={newCommentText}
+            onChange={(e) => setNewCommentText(e.target.value)}
+          />
+          <Button onClick={handleAddNewComment}>Comment</Button>
         </div>
 
         <div className="space-y-2">
-          {comments.map((comment) => (
+          {comments.map((comment, i) => (
             <CommentItem
-              key={comment.id}
+              key={i}
               comment={comment}
               // onDelete={handleDelete}
               // onEdit={handleEdit}
