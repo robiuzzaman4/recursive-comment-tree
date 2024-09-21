@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "./components/button";
 
 type TComment = {
-  id: string | Date;
+  id: number;
   text: string;
   replies: TComment[];
 };
@@ -13,15 +13,15 @@ type TCommentItem = {
 
 const initialComments: TComment[] = [
   {
-    id: "1",
+    id: 1,
     text: "This is the first comment",
     replies: [
       {
-        id: "2",
+        id: 2,
         text: "This is a reply to the first comment",
         replies: [
           {
-            id: "3",
+            id: 3,
             text: "This is a nested reply",
             replies: [],
           },
@@ -30,7 +30,7 @@ const initialComments: TComment[] = [
     ],
   },
   {
-    id: "4",
+    id: 4,
     text: "This is another top-level comment",
     replies: [],
   },
@@ -86,7 +86,7 @@ const App = () => {
       setComments([
         ...comments,
         {
-          id: new Date(),
+          id: Date.now(),
           text: newCommentText,
           replies: [],
         },
