@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
 import { cn } from "../utils/cn";
 
-type Button = {
+type TButton = {
   children: ReactNode;
   className?: string;
   size?: "xs" | "sm";
 };
 
-const Button = ({ children, className }: Button) => {
+const Button = ({ children, className }: TButton) => {
   return (
     <button
       className={cn(
