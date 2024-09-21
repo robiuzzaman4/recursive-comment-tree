@@ -46,6 +46,7 @@ const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
   const handleSaveEdit = () => {
     onEdit(comment.id, editText);
     setIsEditing(false);
+    setEditText("");
   };
 
   // === handling delete ===
@@ -64,13 +65,20 @@ const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
           />
 
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => setIsEditing(false)}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setIsEditing(false);
+                setEditText("");
+              }}
+            >
               Cancel
             </Button>
             <Button
               size="sm"
-              className="bg-neutral-700"
+              className="bg-neutral-700 disabled:cursor-not-allowed"
               onClick={handleSaveEdit}
+              disabled={editText === ""}
             >
               Save
             </Button>

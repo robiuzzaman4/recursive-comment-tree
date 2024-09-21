@@ -6,9 +6,10 @@ type TButton = {
   className?: string;
   size?: "sm";
   onClick?: () => void;
+  disabled?: boolean;
 };
 
-const Button = ({ children, className, size, onClick }: TButton) => {
+const Button = ({ children, className, size, onClick, disabled }: TButton) => {
   return (
     <button
       onClick={onClick}
@@ -19,6 +20,7 @@ const Button = ({ children, className, size, onClick }: TButton) => {
           "px-2 py-0.5 text-xs rounded-full": size === "sm",
         }
       )}
+      disabled={disabled}
     >
       {children}
     </button>
