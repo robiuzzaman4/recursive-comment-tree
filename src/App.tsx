@@ -7,10 +7,6 @@ type TComment = {
   replies: TComment[];
 };
 
-type TCommentItem = {
-  comment: TComment;
-};
-
 const initialComments: TComment[] = [
   {
     id: 1,
@@ -36,9 +32,20 @@ const initialComments: TComment[] = [
   },
 ];
 
-const CommentItem = ({ comment }: TCommentItem) => {
+type TCommentItem = {
+  comment: TComment;
+  onEdit: (id: number, newText: string) => void;
+};
+
+const CommentItem = ({ comment, onEdit }: TCommentItem) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
+
+  // === handling save edit ===
+  const handleSaveEdit = () => {
+    onEdit(comment.id, editText);
+    setIsEditing(false);
+  };
 
   return (
     <div className="p-2 rounded-sm border border-neutral-700 bg-neutral-800 flex flex-col gap-2">
@@ -54,7 +61,11 @@ const CommentItem = ({ comment }: TCommentItem) => {
             <Button size="sm" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
-            <Button size="sm" className="bg-neutral-700">
+            <Button
+              size="sm"
+              className="bg-neutral-700"
+              onClick={handleSaveEdit}
+            >
               Save
             </Button>
           </div>
@@ -95,11 +106,26 @@ const App = () => {
     }
   };
 
+  // === handle edit comment ===
+  const handleEditComment = (id: number, newText: string) => {
+    const editComment = (comments: TComment[]) => {
+      return comments.map((comment) => {
+        if (comment.id === id) {
+          return { ...comment, text: newText };
+        }
+        comment.replies = editComment(comment.replies);
+        return comment;
+      });
+    };
+
+    setComments(editComment(comments));
+  };
+
   return (
     <main className="min-h-screen w-full bg-neutral-900 text-white flex flex-col gap-12">
       <section className="w-full max-w-screen-sm mx-auto px-4 py-12">
         {/* title */}
-        <h3 className="text-3xl font-medium tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-sky-400 to-indigo-200">
+        <h3 className="text-3xl font-medium tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-cyan-400 to-indigo-200">
           Recursive Comment Tree:
         </h3>
 
@@ -122,8 +148,8 @@ const App = () => {
             <CommentItem
               key={i}
               comment={comment}
+              onEdit={handleEditComment}
               // onDelete={handleDelete}
-              // onEdit={handleEdit}
               // onReply={handleReply}
               // depth={0}
             />
