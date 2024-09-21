@@ -36,6 +36,7 @@ type TCommentItem = {
   comment: TComment;
   onEdit: (id: number, newText: string) => void;
   onDelete: (id: number) => void;
+  onReply: (parentId: number, replyText: string) => void;
 };
 
 const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
@@ -53,6 +54,11 @@ const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
   const handleDelete = () => {
     onDelete(comment.id);
   };
+
+  // // === handling reply ===
+  // const handleReply = () =>{
+  //   onReply(comment.id, re)
+  // }
 
   return (
     <div className="p-2 rounded-sm border border-neutral-700 bg-neutral-800 flex flex-col gap-2">
@@ -152,6 +158,27 @@ const App = () => {
     setComments(deleteComment(comments));
   };
 
+  // === handle reply comment ===
+  const handleReplyCommenet = (parantId: number, replyText: string) => {
+    const replyComment = (comments: TComment[]) => {
+      return comments.map((comment) => {
+        if (comment.id === parantId) {
+          return {
+            ...comment,
+            replies: [
+              ...comment.replies,
+              { id: Date.now(), text: replyText, replies: [] },
+            ],
+          };
+        }
+        comment.replies = replyComment(comment.replies);
+        return comment;
+      });
+    };
+
+    setComments(replyComment(comments));
+  };
+
   return (
     <main className="min-h-screen w-full bg-neutral-900 text-white flex flex-col gap-12">
       <section className="w-full max-w-screen-sm mx-auto px-4 py-12">
@@ -181,7 +208,7 @@ const App = () => {
               comment={comment}
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
-              // onReply={handleReply}
+              onReply={handleReplyCommenet}
               // depth={0}
             />
           ))}
