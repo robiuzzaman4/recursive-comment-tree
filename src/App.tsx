@@ -42,6 +42,8 @@ type TCommentItem = {
 const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyText, setReplyText] = useState("");
 
   // === handling save edit ===
   const handleSaveEdit = () => {
@@ -101,7 +103,39 @@ const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
             <Button size="sm" onClick={handleDelete}>
               Delete
             </Button>
-            <Button size="sm">Reply</Button>
+            <Button size="sm" onClick={() => setIsReplying(true)}>
+              Reply
+            </Button>
+          </div>
+        </>
+      )}
+
+      {isReplying && (
+        <>
+          <input
+            className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+          />
+
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                setIsReplying(false);
+                setReplyText("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              className="bg-neutral-700 disabled:cursor-not-allowed"
+              onClick={handleSaveEdit}
+              disabled={replyText === ""}
+            >
+              Send Reply
+            </Button>
           </div>
         </>
       )}
