@@ -39,7 +39,7 @@ type TCommentItem = {
   onReply: (parentId: number, replyText: string) => void;
 };
 
-const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
+const CommentItem = ({ comment, onEdit, onDelete, onReply }: TCommentItem) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
@@ -57,10 +57,12 @@ const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
     onDelete(comment.id);
   };
 
-  // // === handling reply ===
-  // const handleReply = () =>{
-  //   onReply(comment.id, re)
-  // }
+  // === handling reply ===
+  const handleReply = () => {
+    onReply(comment.id, replyText);
+    setIsReplying(false);
+    setReplyText("");
+  };
 
   return (
     <div className="p-2 rounded-sm border border-neutral-700 bg-neutral-800 flex flex-col gap-2">
@@ -131,7 +133,7 @@ const CommentItem = ({ comment, onEdit, onDelete }: TCommentItem) => {
             <Button
               size="sm"
               className="bg-neutral-700 disabled:cursor-not-allowed"
-              onClick={handleSaveEdit}
+              onClick={handleReply}
               disabled={replyText === ""}
             >
               Send Reply
