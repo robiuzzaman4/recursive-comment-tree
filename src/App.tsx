@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "./components/button";
+import { cn } from "./utils/cn";
 
 type TComment = {
   id: number;
@@ -37,9 +38,16 @@ type TCommentItem = {
   onEdit: (id: number, newText: string) => void;
   onDelete: (id: number) => void;
   onReply: (parentId: number, replyText: string) => void;
+  depth: number;
 };
 
-const CommentItem = ({ comment, onEdit, onDelete, onReply }: TCommentItem) => {
+const CommentItem = ({
+  comment,
+  onEdit,
+  onDelete,
+  onReply,
+  depth,
+}: TCommentItem) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
@@ -65,82 +73,103 @@ const CommentItem = ({ comment, onEdit, onDelete, onReply }: TCommentItem) => {
   };
 
   return (
-    <div className="p-2 rounded-sm border border-neutral-700 bg-neutral-800 flex flex-col gap-2">
-      {isEditing ? (
-        <>
-          <input
-            className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
-            value={editText || comment.text}
-            onChange={(e) => setEditText(e.target.value)}
-          />
+    <div
+      className={cn("", {
+        "border-l border-l-neutral-700": depth > 0,
+      })}
+    >
+      <div className="p-2 rounded-sm bg-neutral-800 flex flex-col gap-2">
+        {isEditing ? (
+          <>
+            <input
+              className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
+              value={editText || comment.text}
+              onChange={(e) => setEditText(e.target.value)}
+            />
 
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              onClick={() => {
-                setIsEditing(false);
-                setEditText("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              className="bg-neutral-700 disabled:cursor-not-allowed"
-              onClick={handleSaveEdit}
-              disabled={editText === ""}
-            >
-              Save
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditText("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-neutral-700 disabled:cursor-not-allowed"
+                onClick={handleSaveEdit}
+                disabled={editText === ""}
+              >
+                Save
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-neutral-300">{comment.text}</p>
+
+            <div className="flex items-center gap-2">
+              <Button size="sm" onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+              <Button size="sm" onClick={handleDelete}>
+                Delete
+              </Button>
+              <Button size="sm" onClick={() => setIsReplying(true)}>
+                Reply
+              </Button>
+            </div>
+          </>
+        )}
+
+        {isReplying && (
+          <>
+            <input
+              className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+            />
+
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  setIsReplying(false);
+                  setReplyText("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-neutral-700 disabled:cursor-not-allowed"
+                onClick={handleReply}
+                disabled={replyText === ""}
+              >
+                Send Reply
+              </Button>
+            </div>
+          </>
+        )}
+
+        {comment.replies.length > 0 && (
+          <div className="ml-2">
+            {comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                onDelete={onDelete}
+                onEdit={onEdit}
+                onReply={onReply}
+                depth={depth + 1}
+              />
+            ))}
           </div>
-        </>
-      ) : (
-        <>
-          <p className="text-neutral-300">{comment.text}</p>
-
-          <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => setIsEditing(true)}>
-              Edit
-            </Button>
-            <Button size="sm" onClick={handleDelete}>
-              Delete
-            </Button>
-            <Button size="sm" onClick={() => setIsReplying(true)}>
-              Reply
-            </Button>
-          </div>
-        </>
-      )}
-
-      {isReplying && (
-        <>
-          <input
-            className="w-full px-4 py-2 rounded-sm bg-neutral-800 border border-neutral-700 focus-visible:outline-none text-sm text-neutral-400"
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-          />
-
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              onClick={() => {
-                setIsReplying(false);
-                setReplyText("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              className="bg-neutral-700 disabled:cursor-not-allowed"
-              onClick={handleReply}
-              disabled={replyText === ""}
-            >
-              Send Reply
-            </Button>
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -245,7 +274,7 @@ const App = () => {
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
               onReply={handleReplyCommenet}
-              // depth={0}
+              depth={0}
             />
           ))}
         </div>
